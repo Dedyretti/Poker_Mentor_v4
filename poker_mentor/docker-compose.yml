@@ -1,0 +1,2 @@
+# Создаем симлинк
+ln -s docker/docker-compose.dev.yml docker-compose.yml

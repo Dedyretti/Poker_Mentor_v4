@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  bot:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: poker_mentor_bot
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    volumes:
+      - ../:/app
+    depends_on:
+      - redis
+    command: python -m app.main
+
+  redis:
+    image: redis:7-alpine
+    container_name: poker_mentor_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: poker_mentor_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: poker_mentor
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  redis_data:
+  postgres_data:
