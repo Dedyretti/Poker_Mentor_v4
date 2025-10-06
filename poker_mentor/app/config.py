@@ -1,10 +1,12 @@
 import os
 from typing import Optional
 from pydantic_settings import BaseSettings
+from dotenv import load_dotenv
+from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     """Настройки приложения"""
-    
+    env_file = ".env"
     # Bot
     BOT_TOKEN: str
     
@@ -23,8 +25,23 @@ class Settings(BaseSettings):
     # Game
     DEFAULT_STACK: int = 1000
     DEFAULT_BLIND: int = 10
-    
-    class Config:
-        env_file = ".env"
 
+class Config(BaseSettings):
+    # База данных
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://user:password@localhost/poker_mentor")
+    REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379")
+    
+    # Telegram Bot
+    BOT_TOKEN: str = os.getenv("BOT_TOKEN", "")
+    
+    # AI API
+    AI_API_KEY: str = os.getenv("AI_API_KEY", "")
+    AI_API_URL: str = os.getenv("AI_API_URL", "")
+    
+    # Настройки приложения
+    DEBUG: bool = os.getenv("DEBUG", "False").lower() == "true"
+        
 settings = Settings()
+config = Config()
+load_dotenv()
+

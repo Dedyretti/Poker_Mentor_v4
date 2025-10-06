@@ -7,9 +7,10 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
 from app.bot.bot_core import setup_bot
-from app.config import settings
+from app.config import settings , config
 from app.database.database import init_db
 from app.utils.logger import setup_logging
+
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +26,7 @@ async def lifespan(app=None):
 async def main():
     """Главная функция приложения"""
     setup_logging()
-    
+    init_db()
     # Инициализация бота
     bot = Bot(
         token=settings.BOT_TOKEN,
@@ -38,12 +39,19 @@ async def main():
     
     # Запуск бота
     logger.info("Starting bot...")
-    try:
+    ry:t
         await dp.start_polling(bot)
     except Exception as e:
         logger.error(f"Bot stopped with error: {e}")
     finally:
         await bot.session.close()
+        
+    print("Initializing Poker Mentor...")
+    
+    print("Database initialized successfully!")
+    
+    # Здесь позже добавим инициализацию бота и AI
+    print(f"Configuration loaded: DEBUG={config.DEBUG}")
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
