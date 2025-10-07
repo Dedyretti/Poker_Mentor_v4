@@ -15,3 +15,4 @@ def setup_logger():
 def get_logger(name):
     """Получить логгер"""
     return logging.getLogger(name)
+
