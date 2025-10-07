@@ -2,14 +2,15 @@ import asyncio
 import logging
 from contextlib import asynccontextmanager
 
-from aiogram import Bot, Dispatcher
-from aiogram.client.default import DefaultBotProperties
-from aiogram.enums import ParseMode
+#from aiogram import Bot, Dispatcher
+#from aiogram.client.default import DefaultBotProperties
+#from aiogram.enums import ParseMode
 
 from app.bot.bot_core import setup_bot
 from app.config import settings , config
 from app.database.database import init_db
 from app.utils.logger import setup_logging
+
 
 
 logger = logging.getLogger(__name__)
@@ -26,7 +27,7 @@ async def lifespan(app=None):
 async def main():
     """Главная функция приложения"""
     setup_logging()
-    init_db()
+    '''
     # Инициализация бота
     bot = Bot(
         token=settings.BOT_TOKEN,
@@ -44,10 +45,12 @@ async def main():
     except Exception as e:
         logger.error(f"Bot stopped with error: {e}")
     finally:
-        await bot.session.close()
+        await bot.session.close() временная заглушка'''
         
     print("Initializing Poker Mentor...")
     
+    # Инициализация базы данных
+    init_db()
     print("Database initialized successfully!")
     
     # Здесь позже добавим инициализацию бота и AI
