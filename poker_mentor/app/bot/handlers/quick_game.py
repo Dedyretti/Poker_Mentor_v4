@@ -1,71 +1,65 @@
-from aiogram import Router, F
-from aiogram.types import Message, CallbackQuery
-from aiogram.filters import Command
+from app.bot.bot_core import bot
+from app.bot.keyboards import get_main_menu, get_game_keyboard
 
-from app.bot.keyboards import get_game_keyboard, get_back_button
-from app.database.redis_client import redis_client
-
-router = Router()
-
-@router.message(Command("game"))
-@router.message(F.text == "🎮 Быстрая игра")
-async def cmd_quick_game(message: Message):
-    """Обработчик быстрой игры"""
-    game_text = """
-🎮 <b>Быстрая игра против ИИ</b>
-
-Настройки игры:
-• 💰 Стартовый стек: $1000
-• 🎯 Блайнды: $10/$20
-• 🤖 Сложность: Средняя
-
-Готов начать игру?
-    """
-    
-    await message.answer(
-        game_text,
+@bot.message_handler(func=lambda message: message.text == "📊 Инфо о столе")
+def show_table_info(message):
+    """Показать информацию о столе"""
+    bot.send_message(
+        message.chat.id,
+        "🎯 Учебный стол\n\n"
+        "Игроков: 4\n"
+        "Блайнды: 10/20\n"
+        "Твой стек: 1500\n"
+        "Позиция: Button\n\n"
+        "Твои карты: A♥ K♥",
         reply_markup=get_game_keyboard()
     )
 
-@router.message(F.text == "📊 Проверить")
-async def game_check(message: Message):
-    """Проверить в игре"""
-    # Здесь будет интеграция с игровым движком
-    await message.answer("Вы проверяете... Ход переходит к следующему игроку.")
+@bot.message_handler(func=lambda message: message.text == "🎯 Сделать ход")
+def make_move(message):
+    """Сделать ход"""
+    bot.send_message(
+        message.chat.id,
+        "🎯 Твой ход\n\n"
+        "Доступные действия:\n"
+        "• ✅ Чек\n" 
+        "• 📥 Колл (20)\n"
+        "• 📤 Рейз\n"
+        "• 🛑 Фолд\n\n"
+        "Выбери действие:",
+        reply_markup=get_game_keyboard()
+    )
 
-@router.message(F.text == "📈 Поднять")
-async def game_raise(message: Message):
-    """Поднять в игре"""
-    await message.answer("Вы поднимаете... Введите сумму:")
+@bot.message_handler(func=lambda message: message.text == "📈 Статистика руки")
+def show_hand_stats(message):
+    """Показать статистику руки"""
+    bot.send_message(
+        message.chat.id,
+        "📊 Анализ руки: A♥ K♥\n\n"
+        "Шансы на победу: 67%\n"
+        "Рекомендуемое действие: Рейз\n"
+        "Сила руки: Префлоп монстр",
+        reply_markup=get_game_keyboard()
+    )
 
-@router.message(F.text == "✅ Колл")
-async def game_call(message: Message):
-    """Колл в игре"""
-    await message.answer("Вы делаете колл...")
+@bot.message_handler(func=lambda message: message.text == "🏆 Показать победителя")
+def show_winner(message):
+    """Показать победителя"""
+    bot.send_message(
+        message.chat.id,
+        "🏆 Победитель раунда!\n\n"
+        "Твоя рука: A♥ K♥ - Top Pair\n"
+        "Оппонент: Q♥ J♥ - Straight\n\n"
+        "Победитель: Оппонент (Straight)\n"
+        "Учись на ошибках! 💪",
+        reply_markup=get_game_keyboard()
+    )
 
-@router.message(F.text == "❌ Фолд")
-async def game_fold(message: Message):
-    """Фолд в игре"""
-    await message.answer("Вы сбрасываете карты...")
-
-@router.message(F.text == "🏳️ Сдаться")
-async def game_surrender(message: Message):
-    """Сдаться в игре"""
-    await message.answer("Вы сдались. Игра окончена.")
-
-@router.message(F.text == "📖 Помощь")
-async def game_help(message: Message):
-    """Помощь во время игры"""
-    help_text = """
-📖 <b>Помощь во время игры</b>
-
-📊 <b>Проверить</b> - пропустить ход
-📈 <b>Поднять</b> - увеличить ставку
-✅ <b>Колл</b> - принять текущую ставку  
-❌ <b>Фолд</b> - сбросить карты
-🏳️ <b>Сдаться</b> - завершить игру досрочно
-
-Используйте эти команды для управления игрой!
-    """
-    
-    await message.answer(help_text)
+@bot.message_handler(func=lambda message: message.text == "🔙 Главное меню")
+def return_to_main(message):
+    """Вернуться в главное меню"""
+    bot.send_message(
+        message.chat.id,
+        "Возвращаемся в главное меню...",
+        reply_markup=get_main_menu()
+    )

@@ -1,67 +1,97 @@
-from aiogram import Router, F
-from aiogram.types import Message, CallbackQuery
-from aiogram.filters import CommandStart, Command
-
-from app.bot.keyboards import get_main_menu_keyboard, get_back_button
+from app.bot.bot_core import bot
+from app.bot.keyboards import get_main_menu, get_learning_keyboard, get_game_keyboard, get_analysis_keyboard
 from app.database.crud.users import get_or_create_user
-from app.database.database import async_session_maker
+from app.utils.logger import get_logger
 
-router = Router()
+logger = get_logger(__name__)
 
-@router.message(CommandStart())
-async def cmd_start(message: Message):
+@bot.message_handler(commands=['start'])
+def start_command(message):
     """Обработчик команды /start"""
-    async with async_session_maker() as session:
-        user = await get_or_create_user(
-            session,
-            telegram_id=message.from_user.id,
-            username=message.from_user.username,
-            first_name=message.from_user.first_name,
-            last_name=message.from_user.last_name
-        )
+    user = message.from_user
+    logger.info(f"New user started: {user.id} - {user.username}")
+    
+    # Создаем или получаем пользователя в БД
+    db_user = get_or_create_user(
+        telegram_id=user.id,
+        username=user.username,
+        first_name=user.first_name,
+        last_name=user.last_name
+    )
     
     welcome_text = f"""
-👋 Привет, {message.from_user.first_name}!
+👋 Привет, {user.first_name}!
 
-Добро пожаловать в <b>Poker Mentor</b> - твоего персонального тренера по покеру!
+Я - Poker Mentor, твой персональный тренер по покеру! 
 
-🎯 <b>Что я умею:</b>
-• 🎮 Играть с тобой в покер с ИИ
+🎯 Что я умею:
+• 🎮 Проводить учебные игры
 • 🔍 Анализировать твои руки
-• 📚 Обучать стратегиям и тактикам
-• 📊 Вести статистику твоей игры
+• 📚 Обучать стратегиям
+• 📈 Показывать статистику
 
 Выбери действие из меню ниже:
     """
     
-    await message.answer(
-        welcome_text,
-        reply_markup=get_main_menu_keyboard()
+    bot.send_message(message.chat.id, welcome_text, reply_markup=get_main_menu())
+
+@bot.message_handler(func=lambda message: message.text == "🎮 Быстрая игра")
+def start_quick_game(message):
+    """Начало быстрой игры"""
+    bot.send_message(
+        message.chat.id,
+        "🎮 Запускаем учебную игру...\n\n"
+        "Сейчас я создам виртуальный стол с AI-оппонентами. "
+        "Ты сможешь тренироваться в реальных игровых ситуациях!",
+        reply_markup=get_game_keyboard()
     )
 
-@router.message(Command("help"))
-async def cmd_help(message: Message):
-    """Обработчик команды /help"""
-    help_text = """
-📖 <b>Помощь по боту</b>
-
-🎮 <b>Быстрая игра</b> - сыграй партию против ИИ
-🔍 <b>Анализ руки</b> - получи анализ своей покерной руки
-📚 <b>Обучение</b> - изучи стратегии и тактики покера
-👤 <b>Профиль</b> - просмотри свою статистику и достижения
-📈 <b>Статистика</b> - детальная аналитика твоей игры
-⚙️ <b>Настройки игры</b> - настрой параметры игры
-
-Для начала просто выбери нужный пункт из меню!
-    """
-    
-    await message.answer(help_text)
-
-@router.callback_query(F.data == "back_to_main")
-async def back_to_main(callback: CallbackQuery):
-    """Обработчик возврата в главное меню"""
-    await callback.message.edit_text(
-        "Главное меню:",
-        reply_markup=get_main_menu_keyboard()
+@bot.message_handler(func=lambda message: message.text == "📚 Обучение")
+def start_learning(message):
+    """Начало обучения"""
+    bot.send_message(
+        message.chat.id,
+        "📚 Раздел обучения\n\n"
+        "Выбери тему для изучения:",
+        reply_markup=get_learning_keyboard()
     )
-    await callback.answer()
+
+@bot.message_handler(func=lambda message: message.text == "🔍 Анализ руки")
+def start_analysis(message):
+    """Начало анализа руки"""
+    bot.send_message(
+        message.chat.id,
+        "🔍 Анализ покерной руки\n\n"
+        "Опиши ситуацию в формате:\n"
+        "• Твои карты (например, A♥ K♥)\n" 
+        "• Карты на столе (например, Q♥ J♥ T♥)\n"
+        "• Позиция за столом\n"
+        "• Действия оппонентов\n\n"
+        "Я проанализирую и дам рекомендации!",
+        reply_markup=get_analysis_keyboard()
+    )
+
+@bot.message_handler(func=lambda message: message.text == "📈 Статистика")
+def show_statistics(message):
+    """Показать статистику"""
+    bot.send_message(
+        message.chat.id,
+        "📈 Твоя статистика\n\n"
+        "Пока данные собираются...\n"
+        "Сыграй несколько игр чтобы увидеть свою статистику!",
+        reply_markup=get_main_menu()
+    )
+
+@bot.message_handler(func=lambda message: message.text == "⚙️ Настройки")
+def show_settings(message):
+    """Показать настройки"""
+    bot.send_message(
+        message.chat.id,
+        "⚙️ Настройки\n\n"
+        "Здесь ты сможешь настроить:\n"
+        "• Уровень сложности AI\n"
+        "• Тип игры\n"
+        "• Уведомления\n\n"
+        "Раздел в разработке...",
+        reply_markup=get_main_menu()
+    )

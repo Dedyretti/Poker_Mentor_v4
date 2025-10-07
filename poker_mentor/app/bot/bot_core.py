@@ -1,42 +1,21 @@
-from aiogram import Bot, Dispatcher
-from aiogram.client.default import DefaultBotProperties
-from aiogram.enums import ParseMode
-
-from app.bot.handlers import (
-    start,
-    profile,
-    statistics,
-    analysis,
-    quick_game,
-    game_setup,
-    learning
-)
+import logging
+import telebot
 from app.config import settings
 
-async def setup_bot(bot: Bot, dp: Dispatcher):
-    """Настройка бота и регистрация handlers"""
-    
-    # Регистрация routers
-    dp.include_router(start.router)
-    dp.include_router(profile.router)
-    dp.include_router(statistics.router)
-    dp.include_router(analysis.router)
-    dp.include_router(quick_game.router)
-    dp.include_router(game_setup.router)
-    dp.include_router(learning.router)
-    
-    # Настройка вебхука (если указан)
-    if settings.WEBHOOK_URL:
-        await setup_webhook(bot)
+# Инициализация бота
+bot = telebot.TeleBot(settings.BOT_TOKEN)
 
-async def setup_webhook(bot: Bot):
+# Настройка логирования
+logger = logging.getLogger(__name__)
+
+def setup_webhook():
     """Настройка вебхука для продакшена"""
     webhook_url = f"{settings.WEBHOOK_URL}{settings.WEBHOOK_PATH}"
-    await bot.set_webhook(
-        url=webhook_url,
-        drop_pending_updates=True
-    )
+    bot.remove_webhook()
+    bot.set_webhook(url=webhook_url)
+    logger.info(f"Webhook setup at: {webhook_url}")
 
-async def delete_webhook(bot: Bot):
+def remove_webhook():
     """Удаление вебхука (для разработки)"""
-    await bot.delete_webhook(drop_pending_updates=True)
+    bot.remove_webhook()
+    logger.info("Webhook removed")

@@ -1,27 +1,19 @@
-# Создаем симлинк
-
 version: '3.8'
 
 services:
-  postgres:
-    image: postgres:13
+  poker-bot:
+    build: .
+    ports:
+      - "8000:8000"
     environment:
-      POSTGRES_DB: poker_mentor
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-    ports:
-      - "5432:5432"
+      - BOT_TOKEN=${BOT_TOKEN}
+      - DATABASE_URL=sqlite:///./poker_mentor.db
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./data:/app/data
+    restart: unless-stopped
 
-  redis:
-    image: redis:6-alpine
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-
-volumes:
-  postgres_data:
-  redis_data:
-
+  # Redis будет добавлен позже Participant B
+  # redis:
+  #   image: redis:7-alpine
+  #   ports:
+  #     - "6379:6379"
