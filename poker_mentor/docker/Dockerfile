@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 WORKDIR /app
 
@@ -6,12 +6,12 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Копирование кода
+# Копирование исходного кода
 COPY . .
 
-# Создание пользователя для безопасности
-RUN useradd -m -u 1000 botuser && chown -R botuser:botuser /app
-USER botuser
+# Создание не-root пользователя
+RUN useradd --create-home --shell /bin/bash poker
+USER poker
 
 # Запуск приложения
-CMD ["python", "-m", "app.main"]
+CMD ["python", "run_bot.py"]

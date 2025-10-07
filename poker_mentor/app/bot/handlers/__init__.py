@@ -1,1 +1,3 @@
-# Пустой файл для обозначения пакета
+from .analysis import setup_analysis_handlers
+
+__all__ = ['setup_analysis_handlers']
