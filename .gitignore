@@ -205,3 +205,7 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+
+echo "*.backup.py" >> .gitignore
+echo "run_bot_backup.py" >> .gitignore
