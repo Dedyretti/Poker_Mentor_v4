@@ -42,3 +42,21 @@ class PokerTable:
         """Раздает ривер (5-я карта)"""
         self.deck.deal()  # Сжигаем карту
         self.community_cards.append(self.deck.deal())
+
+    def deal_flop(self):
+        """Раздает флоп (3 карты)"""
+        if len(self.community_cards) == 0:  # Только если еще нет карт
+            self.deck.deal()  # Сжигаем карту
+            self.community_cards.extend([self.deck.deal() for _ in range(3)])
+
+    def deal_turn(self):
+        """Раздает терн (4-я карта)"""
+        if len(self.community_cards) == 3:  # Только после флопа
+            self.deck.deal()  # Сжигаем карту
+            self.community_cards.append(self.deck.deal())
+
+    def deal_river(self):
+        """Раздает ривер (5-я карта)"""
+        if len(self.community_cards) == 4:  # Только после терна
+            self.deck.deal()  # Сжигаем карту
+            self.community_cards.append(self.deck.deal())
