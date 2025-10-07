@@ -1,38 +1,18 @@
-from aiogram import Router, F
-from aiogram.types import Message, CallbackQuery
-from aiogram.filters import Command, StateFilter
-from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import State, StatesGroup
-
-from app.bot.keyboards import get_analysis_options_keyboard, get_back_button
-
-router = Router()
+import telebot
+from telebot.handler_backends import State, StatesGroup
 
 class HandAnalysis(StatesGroup):
     waiting_for_hand = State()
 
-@router.message(Command("analyze"))
-@router.message(F.text == "🔍 Анализ руки")
-async def cmd_analysis(message: Message):
-    """Обработчик анализа руки"""
-    analysis_text = """
-🔍 <b>Анализ покерной руки</b>
-
-Я могу проанализировать твою покерную руку и дать рекомендации по игре.
-
-Выбери тип анализа:
-    """
+def setup_analysis_handlers(bot):
+    """Настройка обработчиков для анализа рук"""
     
-    await message.answer(
-        analysis_text,
-        reply_markup=get_analysis_options_keyboard()
-    )
-
-@router.callback_query(F.data == "analyze_random")
-async def analyze_random(callback: CallbackQuery):
-    """Анализ случайной руки"""
-    # Здесь будет интеграция с AI для анализа
-    analysis_result = """
+    @bot.callback_query_handler(func=lambda call: call.data == "analyze_random")
+    def analyze_random(callback):
+        """Анализ случайной руки"""
+        from app.bot.keyboards import get_back_button
+        
+        analysis_result = """
 🎲 <b>Анализ случайной руки:</b>
 
 🃏 Ваша рука: A♠ K♠
@@ -42,47 +22,107 @@ async def analyze_random(callback: CallbackQuery):
 <b>Рекомендации:</b>
 ✅ <b>Рейз 3x</b> - сильная стартовая рука
 📊 <b>Эквити:</b> 45% против случайной руки
-🎯 <b>Шансы:</b> Хорошие для построения банка
 
 <b>Совет:</b> Играйте агрессивно, но будьте готовы к ререйзам
-    """
-    
-    await callback.message.edit_text(
-        analysis_result,
-        reply_markup=get_back_button()
-    )
-    await callback.answer()
+        """
+        
+        try:
+            bot.edit_message_text(
+                chat_id=callback.message.chat.id,
+                message_id=callback.message.message_id,
+                text=analysis_result,
+                reply_markup=get_back_button(),
+                parse_mode='HTML'
+            )
+        except Exception as e:
+            bot.send_message(
+                callback.message.chat.id,
+                analysis_result,
+                reply_markup=get_back_button(),
+                parse_mode='HTML'
+            )
+        
+        bot.answer_callback_query(callback.id)
 
-@router.callback_query(F.data == "analyze_custom")
-async def analyze_custom_start(callback: CallbackQuery, state: FSMContext):
-    """Начало анализа кастомной руки"""
-    await callback.message.edit_text(
-        "Введите вашу руку в формате: <b>Карта1 Карта2 Позиция</b>\n\n"
-        "Пример: <code>A♠ K♠ MP</code>\n"
-        "Доступные позиции: EP, MP, CO, BTN, SB, BB",
-        reply_markup=get_back_button()
-    )
-    await state.set_state(HandAnalysis.waiting_for_hand)
-    await callback.answer()
+    @bot.callback_query_handler(func=lambda call: call.data == "analyze_custom")
+    def analyze_custom_start(callback):
+        """Начало анализа кастомной руки"""
+        from app.bot.keyboards import get_back_button
+        
+        try:
+            bot.edit_message_text(
+                chat_id=callback.message.chat.id,
+                message_id=callback.message.message_id,
+                text=(
+                    "Введите вашу руку в формате: <b>Карта1 Карта2 Позиция</b>\n\n"
+                    "Пример: <code>A♠ K♠ MP</code>\n"
+                    "Доступные позиции: EP, MP, CO, BTN, SB, BB"
+                ),
+                reply_markup=get_back_button(),
+                parse_mode='HTML'
+            )
+        except Exception as e:
+            bot.send_message(
+                callback.message.chat.id,
+                (
+                    "Введите вашу руку в формате: <b>Карта1 Карта2 Позиция</b>\n\n"
+                    "Пример: <code>A♠ K♠ MP</code>\n"
+                    "Доступные позиции: EP, MP, CO, BTN, SB, BB"
+                ),
+                reply_markup=get_back_button(),
+                parse_mode='HTML'
+            )
+        
+        bot.set_state(callback.from_user.id, HandAnalysis.waiting_for_hand, callback.message.chat.id)
+        bot.answer_callback_query(callback.id)
 
-@router.message(HandAnalysis.waiting_for_hand)
-async def analyze_custom_process(message: Message, state: FSMContext):
-    """Обработка введенной руки"""
-    hand_input = message.text.strip()
-    
-    # Здесь будет интеграция с AI для анализа
-    analysis_result = f"""
+    @bot.message_handler(state=HandAnalysis.waiting_for_hand)
+    def analyze_custom_process(message):
+        """Обработка введенной руки"""
+        hand_input = message.text.strip()
+        
+        analysis_result = f"""
 🔍 <b>Анализ вашей руки:</b>
 
 🃏 Рука: {hand_input}
-🎯 Позиция: MP
+🎯 Позиция: Определяется...
 💰 Блайнды: $1/$2
 
 <b>Рекомендации:</b>
-✅ <b>Результат анализа</b> будет здесь после интеграции с AI
+✅ Анализ выполняется...
 
-<b>Примечание:</b> Функция анализа в стадии разработки
-    """
-    
-    await message.answer(analysis_result)
-    await state.clear()
+<b>Примечание:</b> Функция в стадии разработки
+        """
+        
+        bot.send_message(
+            message.chat.id,
+            analysis_result,
+            parse_mode='HTML'
+        )
+        
+        bot.delete_state(message.from_user.id, message.chat.id)
+
+    @bot.callback_query_handler(func=lambda call: call.data == "back_to_analysis")
+    def back_to_analysis(callback):
+        """Возврат к меню анализа"""
+        from app.bot.keyboards import get_analysis_options_keyboard
+        
+        analysis_text = "🔍 <b>Анализ покерной руки</b>"
+        
+        try:
+            bot.edit_message_text(
+                chat_id=callback.message.chat.id,
+                message_id=callback.message.message_id,
+                text=analysis_text,
+                reply_markup=get_analysis_options_keyboard(),
+                parse_mode='HTML'
+            )
+        except Exception as e:
+            bot.send_message(
+                callback.message.chat.id,
+                analysis_text,
+                reply_markup=get_analysis_options_keyboard(),
+                parse_mode='HTML'
+            )
+        
+        bot.answer_callback_query(callback.id)

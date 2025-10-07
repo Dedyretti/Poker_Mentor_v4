@@ -1,25 +1,25 @@
-from app.bot.bot_core import bot
-from app.config import settings
-from app.utils.logger import setup_logger
+import sys
+import os
 
-# Импортируем все обработчики чтобы они зарегистрировались
-from app.bot.handlers import start, profile, quick_game
-
-setup_logger()
+# Добавляем корневую директорию в путь для импортов
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def main():
-    """Главная функция запуска приложения"""
-    if settings.WEBHOOK_URL:
-        # Режим вебхука (для продакшена)
-        from app.bot.bot_core import setup_webhook
-        setup_webhook()
-        print("🤖 Webhook mode - bot is ready")
-    else:
-        # Режим поллинга (для разработки)
-        print("🤖 Бот запускается в режиме поллинга...")
-        print("✅ Poker Mentor Bot готов к работе!")
-        print("📱 Перейди в Telegram и напиши /start")
-        bot.infinity_polling()
+    """Основная функция запуска приложения"""
+    print("🎯 Запуск Poker Mentor v4...")
+    
+    # Для разработки используем polling, для продакшена - webhook
+    use_webhook = os.getenv('USE_WEBHOOK', 'False').lower() == 'true'
+    
+    try:
+        from app.bot.bot_core import start_bot
+        start_bot(use_webhook=use_webhook)
+    except KeyboardInterrupt:
+        print("\n⏹️ Приложение остановлено")
+    except Exception as e:
+        print(f"❌ Ошибка: {e}")
+        import traceback
+        traceback.print_exc()
 
 if __name__ == "__main__":
     main()
