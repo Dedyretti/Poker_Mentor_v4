@@ -24,20 +24,22 @@ async def main():
         logger.info("✅ Database initialized")
         
         # 2. Инициализация AI клиента
-        from app.ai.ai_client import AIClient
-        ai_client = AIClient()
+        from app.ai.ai_client import AIClient  # ✅ ИСПРАВЛЕНО: app.ai.ai_client
+        ai_client = AIClient()  # ✅ AIClient вместо AICClient
         logger.info("✅ AI client initialized")
         
         # 3. Запуск Telegram бота
         from app.bot.bot_core import start_bot
-        from app.config import BOT_TOKEN
+        from app.config import settings  # ✅ ИСПРАВЛЕННЫЙ ИМПОРТ
+
+        bot_token = settings.TELEGRAM_BOT_TOKEN  # ✅ Используем settings
         
-        if not BOT_TOKEN:
+        if not bot_token:
             logger.error("❌ BOT_TOKEN not found in environment variables")
             return
         
         logger.info("✅ Starting Telegram bot...")
-        await start_bot(BOT_TOKEN)
+        await start_bot(bot_token)
         
     except Exception as e:
         logger.error(f"❌ Application failed to start: {e}")

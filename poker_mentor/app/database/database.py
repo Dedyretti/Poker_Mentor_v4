@@ -1,22 +1,22 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from Poker_Mentor_v4.poker_mentor.config import config
+from app.config import settings  # ✅ ИСПРАВЛЕННЫЙ ИМПОРТ
 from .models import Base
 
 # Создаем движок базы данных
-engine = create_engine(config.DATABASE_URL)
+engine = create_engine(settings.DATABASE_URL)  # ✅ Используем settings
 
 # Создаем фабрику сессий
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)  # ✅ bind=engine, а не bind-engine
 
 def init_db():
     """Инициализация базы данных - создание таблиц"""
-    Base.metadata.create_all(bind=engine)
+    Base.metadata.create_all(bind=engine)  # ✅ bind=engine
 
 def get_db():
     """Получение сессии базы данных для зависимостей"""
     db = SessionLocal()
     try:
-        yield db
+        yield db  # ✅ ПРАВИЛЬНЫЙ ОТСТУП
     finally:
-        db.close()
+        db.close()  # ✅ ПРАВИЛЬНЫЙ ОТСТУП

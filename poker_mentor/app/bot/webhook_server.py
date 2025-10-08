@@ -1,21 +1,21 @@
 from flask import Flask, request
 import telebot  # Добавьте этот импорт
 from app.bot.bot_core import bot
-from Poker_Mentor_v4.poker_mentor.config import WEBHOOK_URL, WEBHOOK_PATH
+from app.config import settings  # ✅ ИСПРАВЛЕННЫЙ ИМПОРТ
 
 app = Flask(__name__)
 
-@app.route(WEBHOOK_PATH, methods=['POST'])
+@app.route(settings.WEBHOOK_PATH, methods=['POST'])  # ✅ settings.WEBHOOK_PATH
 def webhook():
     if request.headers.get('content-type') == 'application/json':
         json_string = request.get_data().decode('utf-8')
-        update = telebot.types.Update.de_json(json_string)  # Исправлено: telebot вместо elgbot
+        update = telebot.types.Update.de_json(json_string)  # ✅ Update с большой буквы
         bot.process_new_updates([update])
         return ''
     return 'Invalid content type', 403
 
 def setup_webhook():
-    webhook_url = f"{WEBHOOK_URL}{WEBHOOK_PATH}"  # Исправлено: убрали лишний символ >
+    webhook_url = f"{settings.WEBHOOK_URL}{settings.WEBHOOK_PATH}"  # ✅ settings
     bot.remove_webhook()
     bot.set_webhook(url=webhook_url)
 

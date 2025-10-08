@@ -3,6 +3,14 @@ import logging
 import telebot
 from dotenv import load_dotenv
 
+
+
+import os
+import logging
+import telebot
+from dotenv import load_dotenv
+from app.config import settings  # ✅ ДОБАВЛЕН ИМПОРТ
+
 # Загрузка переменных окружения
 load_dotenv()
 
@@ -11,8 +19,10 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Инициализация бота
-bot = telebot.TeleBot(os.getenv('TELEGRAM_BOT_TOKEN'))
+bot = telebot.TeleBot(settings.TELEGRAM_BOT_TOKEN)  # ✅ settings вместо os.getenv
 dp = bot  # для совместимости
+
+# ... остальной код без изменений ...
 
 def start_bot(use_webhook=False):
     """Запуск бота"""

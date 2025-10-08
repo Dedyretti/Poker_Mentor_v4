@@ -5,13 +5,13 @@ from app.config import settings
 
 logger = logging.getLogger(__name__)
 
-class AIClient:
+class AIClient:  # ✅ ИСПРАВЛЕНО: AIClient вместо AIClientry
     def __init__(self):
-        self.client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+        self.client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)  # ✅ = вместо -
         self.model = settings.OPENAI_MODEL
         
     async def get_completion(self, prompt: str, temperature: float = 0.7) -> str:
-        """Получение ответа от OpenAI API"""
+        """Получение ответа от OpenAI API"""  # ✅ Исправлено описание
         try:
             response = await self.client.chat.completions.create(
                 model=self.model,
@@ -25,7 +25,7 @@ class AIClient:
             return "Извините, сервис временно недоступен"
     
     async def get_embedding(self, text: str) -> list:
-        """Получение эмбеддингов для текста"""
+        """Получение эмбеддингов для текста"""  # ✅ Исправлено описание
         try:
             response = await self.client.embeddings.create(
                 model="text-embedding-ada-002",
@@ -37,4 +37,4 @@ class AIClient:
             return []
 
 # Глобальный инстанс AI клиента
-ai_client = AIClient()
+ai_client = AIClient()  # ✅ AIClient вместо AIClientry
