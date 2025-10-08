@@ -1,22 +1,41 @@
 version: '3.8'
 
 services:
-  poker-bot:
+  bot:
     build: .
-    ports:
-      - "8000:8000"
-    environment:
-      - ENVIRONMENT=development
-      - LOG_LEVEL=INFO
-    volumes:
-      - .:/app
+    container_name: poker_mentor_bot
     restart: unless-stopped
     env_file:
       - .env
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - postgres
+    command: python main.py
 
-  # Redis для кэширования (опционально)
   redis:
     image: redis:7-alpine
+    container_name: poker_mentor_redis
+    restart: unless-stopped
     ports:
       - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: poker_mentor_postgres
     restart: unless-stopped
+    environment:
+      POSTGRES_DB: poker_mentor
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  redis_data:
+  postgres_data:

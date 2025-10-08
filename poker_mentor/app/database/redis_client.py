@@ -1,5 +1,5 @@
 import redis
-from app.config import config
+from Poker_Mentor_v4.poker_mentor.config import config
 
 # Создаем подключение к Redis
 redis_client = redis.Redis.from_url(config.REDIS_URL, decode_responses=True)

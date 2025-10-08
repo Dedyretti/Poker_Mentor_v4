@@ -1,7 +1,7 @@
 from flask import Flask, request
 import telebot  # Добавьте этот импорт
 from app.bot.bot_core import bot
-from app.config import WEBHOOK_URL, WEBHOOK_PATH
+from Poker_Mentor_v4.poker_mentor.config import WEBHOOK_URL, WEBHOOK_PATH
 
 app = Flask(__name__)
 
