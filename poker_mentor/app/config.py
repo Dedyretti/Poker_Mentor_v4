@@ -14,7 +14,7 @@ WEBHOOK_PATH = f"/webhook/{TELEGRAM_BOT_TOKEN}"
 DATABASE_URL = os.getenv('DATABASE_URL', 'sqlite:///./poker_mentor.db')
 
 # AI Configuration
-AI_API_KEY = os.getenv('AI_API_KEY')
+AI_API_KEY = os.getenv('ск-1234abcd1234abcd1234abcd1234abcd1234abcd')
 AI_MODEL = os.getenv('AI_MODEL', 'gpt-4')
 
 # Game Configuration
