@@ -1,13 +1,10 @@
 [build]
-builder = "DOCKERFILE"
-dockerfilePath = "./Dockerfile"
+builder = "NIXPACKS"
 
 [deploy]
-numReplicas = 1
-restartPolicyType = "ON_FAILURE"
-restartPolicyMaxRetries = 10
+startCommand = "python bot/webhook_server.py"
+healthcheckPath = "/health"
 
-# Если используешь вебхуки для бота
 [[services]]
 name = "web"
 http_port = 8080
