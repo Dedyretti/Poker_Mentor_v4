@@ -1,25 +1,47 @@
-import sys
 import os
+import logging
+from dotenv import load_dotenv
 
-# Добавляем корневую директорию в путь для импортов
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Загрузка переменных окружения
+load_dotenv()
 
-def main():
-    """Основная функция запуска приложения"""
-    print("🎯 Запуск Poker Mentor v4...")
-    
-    # Для разработки используем polling, для продакшена - webhook
-    use_webhook = os.getenv('USE_WEBHOOK', 'False').lower() == 'true'
-    
+# Настройка логирования
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+async def main():
+    """Главная функция инициализации и запуска приложения"""
     try:
+        logger.info("Starting Poker Mentor application...")
+        
+        # 1. Инициализация базы данных (Участник B)
+        from app.database.database import init_db
+        init_db()
+        logger.info("✅ Database initialized")
+        
+        # 2. Инициализация AI (Участник C)
+        from app.ai.ai_client import AIClient
+        ai_client = AIClient()
+        logger.info("✅ AI client initialized")
+        
+        # 3. Запуск Telegram бота (Участник A)
         from app.bot.bot_core import start_bot
-        start_bot(use_webhook=use_webhook)
-    except KeyboardInterrupt:
-        print("\n⏹️ Приложение остановлено")
+        bot_token = os.getenv("BOT_TOKEN")
+        
+        if not bot_token:
+            logger.error("❌ BOT_TOKEN not found in environment variables")
+            return
+        
+        logger.info("✅ Starting Telegram bot...")
+        await start_bot(bot_token)
+        
     except Exception as e:
-        print(f"❌ Ошибка: {e}")
-        import traceback
-        traceback.print_exc()
+        logger.error(f"❌ Application failed to start: {e}")
+        raise
 
 if __name__ == "__main__":
-    main()
+    import asyncio
+    asyncio.run(main())

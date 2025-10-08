@@ -1,17 +1,23 @@
-FROM python:3.12-slim
+FROM python:3.11-slim
 
 WORKDIR /app
 
-# Установка зависимостей
+# Установка системных зависимостей
+RUN apt-get update && apt-get install -y \
+    gcc \
+    postgresql-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Копирование requirements и установка Python зависимостей
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Копирование исходного кода
 COPY . .
 
-# Создание не-root пользователя
-RUN useradd --create-home --shell /bin/bash poker
-USER poker
+# Создание непривилегированного пользователя
+RUN useradd --create-home --shell /bin/bash app
+USER app
 
 # Запуск приложения
-CMD ["python", "run_bot.py"]
+CMD ["python", "app/main.py"]
