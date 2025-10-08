@@ -1,0 +1,1 @@
+web: cd poker_mentor && python bot/webhook_server.py

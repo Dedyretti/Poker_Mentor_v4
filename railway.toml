@@ -1,0 +1,12 @@
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "cd poker_mentor && python bot/webhook_server.py"
+
+[[services]]
+name = "web"
+http_port = 8080
+
+[build.environment]
+PYTHON_VERSION = "3.11"
