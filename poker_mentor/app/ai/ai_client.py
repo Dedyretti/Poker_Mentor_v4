@@ -1,7 +1,7 @@
 import openai
 from openai import AsyncOpenAI
 import logging
-from app.config import settings
+from poker_mentor.config import settings
 
 logger = logging.getLogger(__name__)
 

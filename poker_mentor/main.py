@@ -24,15 +24,15 @@ async def main():
         logger.info("✅ Database initialized")
         
         # 2. Инициализация AI клиента
-        from app.ai.ai_client import AIClient  # ✅ ИСПРАВЛЕНО: app.ai.ai_client
-        ai_client = AIClient()  # ✅ AIClient вместо AICClient
+        from app.ai.ai_client import AIClient
+        ai_client = AIClient()
         logger.info("✅ AI client initialized")
         
         # 3. Запуск Telegram бота
         from app.bot.bot_core import start_bot
-        from app.config import settings  # ✅ ИСПРАВЛЕННЫЙ ИМПОРТ
+        from poker_mentor.config import settings
 
-        bot_token = settings.TELEGRAM_BOT_TOKEN  # ✅ Используем settings
+        bot_token = settings.TELEGRAM_BOT_TOKEN
         
         if not bot_token:
             logger.error("❌ BOT_TOKEN not found in environment variables")
@@ -46,4 +46,7 @@ async def main():
         raise
 
 if __name__ == "__main__":
+    # Для продакшена добавляем поддержку порта
+    port = int(os.environ.get("PORT", 8000))
+    logger.info(f"🚀 Application starting on port {port}")
     asyncio.run(main())

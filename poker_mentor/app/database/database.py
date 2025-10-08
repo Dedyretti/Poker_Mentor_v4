@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from app.config import settings  # ✅ ИСПРАВЛЕННЫЙ ИМПОРТ
+from poker_mentor.config import settings # ✅ ИСПРАВЛЕННЫЙ ИМПОРТ
 from .models import Base
 
 # Создаем движок базы данных

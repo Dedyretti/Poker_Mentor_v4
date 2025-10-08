@@ -1,7 +1,7 @@
 from flask import Flask, request
 import telebot  # Добавьте этот импорт
 from app.bot.bot_core import bot
-from app.config import settings  # ✅ ИСПРАВЛЕННЫЙ ИМПОРТ
+from poker_mentor.config import settings  # ✅ ИСПРАВЛЕННЫЙ ИМПОРТ
 
 app = Flask(__name__)
 
