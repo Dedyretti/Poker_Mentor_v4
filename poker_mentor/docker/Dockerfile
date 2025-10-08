@@ -1,23 +1,18 @@
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 WORKDIR /app
 
-# Установка системных зависимостей
-RUN apt-get update && apt-get install -y \
-    gcc \
-    postgresql-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# Копирование requirements и установка Python зависимостей
+# Копируем зависимости сначала для кэширования
 COPY requirements.txt .
+
+# Устанавливаем зависимости
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Копирование исходного кода
+# Копируем весь проект
 COPY . .
 
-# Создание непривилегированного пользователя
-RUN useradd --create-home --shell /bin/bash app
-USER app
+# Создаем переменную для порта (Railway сам назначает порт)
+ENV PORT=8080
 
-# Запуск приложения
-CMD ["python", "app/main.py"]
+# Запускаем приложение
+CMD ["python", "bot/webhook_server.py"]

@@ -1,17 +1,13 @@
 [build]
-builder = "nixpacks"
+builder = "DOCKERFILE"
+dockerfilePath = "./Dockerfile"
 
 [deploy]
-startCommand = "python app/main.py"
+numReplicas = 1
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
 
+# Если используешь вебхуки для бота
 [[services]]
 name = "web"
-port = 8000
-
-[[services]]
-name = "postgres"
-type = "postgres"
-
-[[services]]  
-name = "redis"
-type = "redis"
+http_port = 8080
