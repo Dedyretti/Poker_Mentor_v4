@@ -1,18 +1,27 @@
-FROM python:3.11-slim
+FROM python:3.11-alpine
 
 WORKDIR /app
 
-# Копируем requirements.txt
+# Устанавливаем системные зависимости для компиляции
+RUN apk add --no-cache \
+    gcc \
+    g++ \
+    musl-dev \
+    linux-headers \
+    libffi-dev \
+    openssl-dev
+
+# Копируем requirements
 COPY requirements.txt .
 
-# Устанавливаем зависимости
+# Устанавливаем Python зависимости
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Копируем папку poker_mentor
+# Удаляем компиляторы (они больше не нужны)
+RUN apk del gcc g++ musl-dev linux-headers
+
+# Копируем код
 COPY poker_mentor/ ./poker_mentor/
 
-# Устанавливаем переменные окружения
 ENV PORT=8080
-
-# Запускаем приложение
 CMD ["python", "poker_mentor/bot/webhook_server.py"]
