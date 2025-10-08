@@ -1,9 +1,5 @@
 [build]
-builder = "NIXPACKS"
-buildCommand = "cd poker_mentor && pip install -r requirements.txt"
-
-[deploy]
-startCommand = "cd poker_mentor && python bot/webhook_server.py"
+builder = "DOCKERFILE"
 
 [[services]]
 name = "web"
