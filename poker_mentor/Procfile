@@ -1,4 +1,1 @@
-web: python railway_start.py
-web: python main.py
-worker: python -m app.worker
 web: python bot/webhook_server.py
