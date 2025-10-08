@@ -1,9 +1,5 @@
-from .ai_client import AIClient
-from .game_ai import BasePokerAI
-from .analysis_ai import AnalysisAI
+from app.ai.ai_client import ai_client
+from app.ai.game_ai import game_ai
+from app.ai.analysis_ai import analysis_ai
 
-__all__ = [
-    "AIClient",
-    "BasePokerAI", 
-    "AnalysisAI"
-]
+__all__ = ['ai_client', 'game_ai', 'analysis_ai']
