@@ -1,26 +1,25 @@
-FROM python:3.11-alpine
+FROM python:3.11-slim
 
 WORKDIR /app
 
-# Устанавливаем системные зависимости для компиляции
-RUN apk add --no-cache \
+# Устанавливаем только минимальные системные зависимости
+RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     g++ \
-    musl-dev \
-    linux-headers \
-    libffi-dev \
-    openssl-dev
+    && rm -rf /var/lib/apt/lists/*
 
-# Копируем requirements
 COPY requirements.txt .
 
-# Устанавливаем Python зависимости
+# Устанавливаем CPU-only версию PyTorch с правильным индексом
+RUN pip install --no-cache-dir torch==2.2.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Удаляем компиляторы (они больше не нужны)
-RUN apk del gcc g++ musl-dev linux-headers
+# Очищаем кэш и удаляем компиляторы
+RUN apt-get remove -y gcc g++ \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/* \
+    && pip cache purge
 
-# Копируем код
 COPY poker_mentor/ ./poker_mentor/
 
 ENV PORT=8080
