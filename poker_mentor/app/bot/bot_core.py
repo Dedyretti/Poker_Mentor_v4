@@ -24,16 +24,17 @@ dp = bot  # для совместимости
 
 # ... остальной код без изменений ...
 
-def start_bot(use_webhook=False):
+def start_bot(use_webhook=False):  # ✅ use_webhook=False по умолчанию
     """Запуск бота"""
     try:
         if use_webhook:
             logger.info("Запуск в режиме webhook...")
+            # Код для webhook
         else:
-            logger.info("Запуск в режиме polling...")
+            logger.info("Запуск в режиме polling...")  # ✅ ЭТО ДОЛЖНО БЫТЬ ПО УМОЛЧАНИЮ
             setup_handlers()
             print("🟢 Бот запущен и готов к работе!")
-            bot.infinity_polling(timeout=10, long_polling_timeout=5)
+            bot.infinity_polling(timeout=10, long_polling_timeout=5)  # ✅ POLLING
     except Exception as e:
         logger.error(f"Ошибка при запуске бота: {e}")
 
