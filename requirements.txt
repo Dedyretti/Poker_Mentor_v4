@@ -16,3 +16,4 @@ pydantic-settings==2.1.0
 python-multipart
 flask
 pytelegrambotapi
+telebot == 0.0.5
