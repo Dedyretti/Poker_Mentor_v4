@@ -2,7 +2,7 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "cd Poker_Mentor_v4/poker_mentor && python main.py"
+startCommand = "python poker_mentor/main.py"
 restartPolicyType = "on_failure"
 
 [environments]
@@ -10,7 +10,6 @@ restartPolicyType = "on_failure"
     [environments.production.variables]
       PYTHONUNBUFFERED = "true"
 
-# Health checks (опционально)
 [[services]]
 name = "web"
 [http]
