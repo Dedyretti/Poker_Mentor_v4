@@ -1,5 +1,11 @@
 [build]
-builder = "DOCKERFILE"
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "python bot/webhook_server.py"
+
+[build.environment]
+PYTHON_VERSION = "3.11"
 
 [[services]]
 name = "web"
