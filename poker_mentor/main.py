@@ -16,9 +16,8 @@ logger = logging.getLogger(__name__)
 async def main():
     """Главная функция инициализации и запуска приложения"""
     try:
-        logger.info("🚀 Starting Poker Mentor application...")
-        await start_bot(bot_token)
-
+        logger.info("🚀 Starting Poker Mentor PRODUCTION...")
+        
         # 1. Инициализация базы данных
         from app.database.database import init_db
         init_db()
@@ -29,9 +28,9 @@ async def main():
         ai_client = AIClient()
         logger.info("✅ AI client initialized")
         
-        # 3. Запуск Telegram бота
+        # 3. Запуск Telegram бота в режиме POLLING
         from app.bot.bot_core import start_bot
-        from poker_mentor.config import settings
+        from app.config import settings
 
         bot_token = settings.TELEGRAM_BOT_TOKEN
         
@@ -39,7 +38,9 @@ async def main():
             logger.error("❌ BOT_TOKEN not found in environment variables")
             return
         
-        logger.info("✅ Starting Telegram bot...")
+        logger.info("✅ Starting Telegram bot in POLLING mode...")
+        
+        # Запускаем бота (блокирующий вызов)
         await start_bot(bot_token)
         
     except Exception as e:
@@ -47,7 +48,4 @@ async def main():
         raise
 
 if __name__ == "__main__":
-    # Для продакшена добавляем поддержку порта
-    port = int(os.environ.get("PORT", 8000))
-    logger.info(f"🚀 Application starting on port {port}")
     asyncio.run(main())
