@@ -17,7 +17,8 @@ async def main():
     """Главная функция инициализации и запуска приложения"""
     try:
         logger.info("🚀 Starting Poker Mentor application...")
-        
+        await start_bot(bot_token)
+
         # 1. Инициализация базы данных
         from app.database.database import init_db
         init_db()
