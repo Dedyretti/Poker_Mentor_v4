@@ -2,7 +2,7 @@
 builder = "NIXPACKS"
 
 [deploy]
-startCommand = "cd Poker_Mentor_v4/poker_mentor/app && python bot/webhook_server.py"
+startCommand = "cd poker_mentor/app && python bot/webhook_server.py"
 
 [[services]]
 name = "web"
