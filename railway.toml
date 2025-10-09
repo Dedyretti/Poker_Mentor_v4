@@ -10,3 +10,6 @@ http_port = 8080
 
 [build.environment]
 PYTHON_VERSION = "3.11"
+
+[service]
+compute = "large"  # или "medium", "x-large" и т.д.
