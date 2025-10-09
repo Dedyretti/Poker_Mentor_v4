@@ -1,20 +1,16 @@
 [build]
 builder = "nixpacks"
 
+[build]
+builder = "nixpacks"
+
 [deploy]
-startCommand = "python main.py"
+startCommand = "cd Poker_Mentor_v4/poker_mentor && python main.py"
 restartPolicyType = "on_failure"
-restartPolicyMaxRetries = 10
 
 [environments]
   [environments.production]
     [environments.production.variables]
-      NODE_ENV = "production"
-      PYTHONUNBUFFERED = "true"
-
-  [environments.development]
-    [environments.development.variables] 
-      NODE_ENV = "development"
       PYTHONUNBUFFERED = "true"
 
 # Health checks (опционально)
