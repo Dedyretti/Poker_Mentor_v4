@@ -1,12 +1,30 @@
 [build]
-builder = "NIXPACKS"
+builder = "nixpacks"
 
 [deploy]
-startCommand = "cd poker_mentor/app && python bot/webhook_server.py"
+startCommand = "python main.py"
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 10
 
+[environments]
+  [environments.production]
+    [environments.production.variables]
+      NODE_ENV = "production"
+      PYTHONUNBUFFERED = "true"
+
+  [environments.development]
+    [environments.development.variables] 
+      NODE_ENV = "development"
+      PYTHONUNBUFFERED = "true"
+
+# Health checks (опционально)
 [[services]]
 name = "web"
-http_port = 8080
-
-[build.environment]
-PYTHON_VERSION = "3.11"
+[http]
+path = "/health"
+port = 8000
+initialDelaySeconds = 30
+periodSeconds = 60
+timeoutSeconds = 10
+successThreshold = 1
+failureThreshold = 3
